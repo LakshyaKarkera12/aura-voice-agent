@@ -80,7 +80,7 @@ Golden rule: **get each layer working before starting the next.** Graded feature
 - [x] Deploy to Vercel; add **all** env vars in Vercel project settings; redeploy — live at https://aura-voice-agent-sandy.vercel.app (pages 200, `/api` returns 401 without login, no secrets in public JS)
 - [ ] Live URL test in Chrome + one other browser: signup, login, mic prompt, full call, summary, email arrives (check spam)
 - [ ] Sign up a fresh test email on the live site to confirm the evaluator path
-- [ ] Finish `README.md` (architecture, setup, Section 9, live URL, "how to test" note that signup is required and instant)
+- [x] Finish `README.md` (architecture, setup, Section 9, live URL, "how to test" note that signup is required and instant) — *add demo video + LinkedIn links; personalise Section 9 #2*
 - [ ] Record demo video: signup → personalised greeting → order lookup → policy refusal → edge case → summary + email in inbox → architecture walkthrough
 - [ ] Approach note; LinkedIn link tested in incognito
 - [ ] Email submission — To: ozair.shaikh@datastraw.in, aryan.jaiswal@datastraw.in · CC: talent@datastraw.in · Subject: `AI Voice Agent Assignment - [Full Name]`
