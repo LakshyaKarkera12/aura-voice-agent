@@ -176,7 +176,11 @@ Record every meaningful choice: what, why, what we gave up. This becomes README 
 - **Fix:** renamed the parameter to exactly `order_id` and set 10 s timeouts via the tools API (verified). Safety nets: `voice.js` trims parameter names before running a tool; `npm run check:env` now checks both tools' names, parameter names, "wait for response" and timeouts.
 - **Lesson:** CLAUDE.md rule 7 (names must match exactly) applies to parameter names too, and whitespace is invisible in a dashboard.
 
-### D-38: Known limits of ID normalisation
+### D-38: No "summary will be emailed" in the action items
+- **Issue:** Aria says "a summary will be sent to your email" when ending every call, and Gemini copied it into `action_items` (shown as "Next steps" in the email), which isn't a real follow-up.
+- **Fix:** the summary prompt says not to list it, and `validateSummary()` drops any action item mentioning "summary" as a guarantee. Real items (e.g. "email photos of the damaged product", refunds) are kept; tested.
+
+### D-39: Known limits of ID normalisation
 - "one hundred and one" becomes ORD-11 (not found), so Aria asks again; speech-to-text usually writes "101" as digits anyway. Digits elsewhere in the same string would be merged, but the LLM passes only the ID.
 
 ### D-16: Mock order dates are relative to "now"

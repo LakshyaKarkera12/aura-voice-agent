@@ -125,7 +125,8 @@ JSON fields:
   (DECLINED_PER_POLICY = the customer asked for something the policy doesn't allow)
 - "policy_applied": short text naming the policy used, or null
 - "customer_sentiment": one of: ${SENTIMENTS.join(', ')}
-- "action_items": array of short follow-up actions (can be empty)
+- "action_items": array of short, real follow-up actions (can be empty). Never include
+  sending this call summary or an email about this call: that happens automatically.
 - "call_summary": 1 to 3 plain-English sentences
 
 Transcript:
@@ -185,7 +186,9 @@ export function validateSummary(raw, { customerName, durationSeconds }) {
     resolution_status: pick(r.resolution_status, RESOLUTIONS, 'UNRESOLVED'),
     policy_applied: cleanString(r.policy_applied, 200),
     customer_sentiment: pick(r.customer_sentiment, SENTIMENTS, 'NEUTRAL'),
-    action_items: cleanStringArray(r.action_items, 5, 200),
+    // Drop "a summary will be emailed" items: Aria says it when ending every
+    // call, but it's automatic, not a real next step (DECISIONS D-38).
+    action_items: cleanStringArray(r.action_items, 5, 200).filter((a) => !/\bsummary\b/i.test(a)),
     call_summary:
       cleanString(r.call_summary, 600) ??
       "A summary couldn't be generated automatically for this call. The full transcript is shown on the page.",

@@ -166,6 +166,18 @@ describe('validateSummary', () => {
     assert.deepEqual(s.secondary_intents, ['SHIPPING_INFO']);
   });
 
+  it('drops "summary will be emailed" action items, keeps real ones', () => {
+    const s = validateSummary({
+      action_items: [
+        'Send call summary to customer email',
+        'A summary of this call will be sent to the customer',
+        'Customer to email photos of the damaged product',
+        'Refund to original payment method',
+      ],
+    }, facts);
+    assert.deepEqual(s.action_items, ['Customer to email photos of the damaged product', 'Refund to original payment method']);
+  });
+
   it('lower-case order id is normalised', () => {
     assert.equal(validateSummary({ order_id: 'ord-102' }, facts).order_id, 'ORD-102');
   });
