@@ -1,4 +1,4 @@
-﻿// scripts/check-env.mjs â€” checks that the keys in .env.local are present and work.
+// scripts/check-env.mjs â€” checks that the keys in .env.local are present and work.
 // Run with:  npm run check:env
 //
 // It NEVER prints key values. It only talks to each key's own service:

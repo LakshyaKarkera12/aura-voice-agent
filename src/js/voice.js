@@ -1,4 +1,4 @@
-﻿// voice.js â€” the voice call: its state machine and the ElevenLabs session.
+// voice.js â€” the voice call: its state machine and the ElevenLabs session.
 //
 // SDK: @elevenlabs/client (see package.json for the version). Checked against
 // its type definitions: clientTools may return only string/number, onMessage
