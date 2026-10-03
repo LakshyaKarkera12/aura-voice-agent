@@ -169,7 +169,14 @@ Record every meaningful choice: what, why, what we gave up. This becomes README 
 - **Why safe:** the events only affect the user's own summary (email still goes to the verified token address), and malformed events are dropped.
 - **Live check:** main model returned 503, backup `gemini-3.5-flash-lite` answered; ORD-103 → Cancellation / RESOLVED.
 
-### D-37: Known limits of ID normalisation
+### D-37: Calls dropping when cancelling — a typo in the dashboard tool
+- **Symptom:** after two or three questions, the call ended abruptly, always right after "yes, cancel it".
+- **Diagnosis:** pulled the agent's conversation history from the ElevenLabs API. Every dropped call ended with `LLM Cascade Error: Tool request is missing required parameters` → `All LLMs have failed`. Calls without a cancellation ended normally (`end_call tool was called`).
+- **Root cause:** in the dashboard, `cancel_order`'s parameter was named `" order_id"` (leading space). The model sent `order_id`, the platform saw the required `" order_id"` as missing, and terminated the conversation. Also both tools had a 1 s response timeout.
+- **Fix:** renamed the parameter to exactly `order_id` and set 10 s timeouts via the tools API (verified). Safety nets: `voice.js` trims parameter names before running a tool; `npm run check:env` now checks both tools' names, parameter names, "wait for response" and timeouts.
+- **Lesson:** CLAUDE.md rule 7 (names must match exactly) applies to parameter names too, and whitespace is invisible in a dashboard.
+
+### D-38: Known limits of ID normalisation
 - "one hundred and one" becomes ORD-11 (not found), so Aria asks again; speech-to-text usually writes "101" as digits anyway. Digits elsewhere in the same string would be merged, but the LLM passes only the ID.
 
 ### D-16: Mock order dates are relative to "now"

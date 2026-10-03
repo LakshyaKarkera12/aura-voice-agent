@@ -1,4 +1,4 @@
-// scripts/check-env.mjs — checks that the keys in .env.local are present and work.
+﻿// scripts/check-env.mjs â€” checks that the keys in .env.local are present and work.
 // Run with:  npm run check:env
 //
 // It NEVER prints key values. It only talks to each key's own service:
@@ -7,7 +7,7 @@
 import { existsSync } from 'node:fs';
 
 if (!existsSync('.env.local')) {
-  console.log('✖ .env.local not found. Copy .env.example to .env.local and fill it in.');
+  console.log('âœ– .env.local not found. Copy .env.example to .env.local and fill it in.');
   process.exit(1);
 }
 process.loadEnvFile('.env.local'); // built into Node 20.12+, no package needed
@@ -15,8 +15,8 @@ process.loadEnvFile('.env.local'); // built into Node 20.12+, no package needed
 const env = process.env;
 let failures = 0;
 
-const ok = (msg) => console.log(`  ✔ ${msg}`);
-const fail = (msg) => { console.log(`  ✖ ${msg}`); failures++; };
+const ok = (msg) => console.log(`  âœ” ${msg}`);
+const fail = (msg) => { console.log(`  âœ– ${msg}`); failures++; };
 const warn = (msg) => console.log(`  ! ${msg}`);
 
 function requireVars(names) {
@@ -41,7 +41,7 @@ if (requireVars(['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY', 'SUPABASE_URL', 
   if (env.VITE_SUPABASE_URL !== env.SUPABASE_URL || env.VITE_SUPABASE_ANON_KEY !== env.SUPABASE_ANON_KEY) {
     warn('VITE_SUPABASE_* and SUPABASE_* differ. They should be the same values.');
   }
-  // Common mistake: copying the REST endpoint (…supabase.co/rest/v1/) instead of the project URL.
+  // Common mistake: copying the REST endpoint (â€¦supabase.co/rest/v1/) instead of the project URL.
   for (const name of ['VITE_SUPABASE_URL', 'SUPABASE_URL']) {
     try {
       if (new URL(env[name]).pathname.replace(/\/$/, '') !== '') {
@@ -61,13 +61,41 @@ if (requireVars(['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY', 'SUPABASE_URL', 
     } else {
       const settings = await res.json();
       ok('URL and key work');
-      settings.external?.email ? ok('Email sign-in is enabled') : fail('Email provider is OFF (Authentication → Providers/Sign In → Email)');
+      settings.external?.email ? ok('Email sign-in is enabled') : fail('Email provider is OFF (Authentication â†’ Providers/Sign In â†’ Email)');
       settings.mailer_autoconfirm
         ? ok('"Confirm email" is OFF, so signup is instant')
         : fail('"Confirm email" is still ON. Turn it off so evaluators can sign up instantly.');
     }
   } catch (e) {
     fail(`Could not reach Supabase (${e.cause?.code ?? e.message}). Is the URL right?`);
+  }
+}
+
+// Checks the agent's client tools match what the code expects. A parameter
+// named " order_id" (with a space) once made ElevenLabs end every call that
+// tried to cancel an order (DECISIONS D-37).
+async function checkAgentTools() {
+  const h = { 'xi-api-key': env.ELEVENLABS_API_KEY };
+  const agent = await (await fetch(`https://api.elevenlabs.io/v1/convai/agents/${encodeURIComponent(env.ELEVENLABS_AGENT_ID)}`, { headers: h })).json();
+  const ids = agent.conversation_config?.agent?.prompt?.tool_ids ?? [];
+  const found = {};
+  for (const id of ids) {
+    const config = (await (await fetch(`https://api.elevenlabs.io/v1/convai/tools/${id}`, { headers: h })).json()).tool_config;
+    if (config) found[config.name] = config;
+  }
+  for (const name of ['get_order_details', 'cancel_order']) {
+    const config = found[name];
+    if (!config) { fail(`Agent has no client tool named exactly "${name}"`); continue; }
+    const params = Object.keys(config.parameters?.properties ?? {});
+    if (params.length !== 1 || params[0] !== 'order_id') {
+      fail(`${name}: parameter must be named exactly "order_id" (found ${JSON.stringify(params)})`);
+    } else if (!config.expects_response) {
+      fail(`${name}: "Wait for response" must be ON`);
+    } else if ((config.response_timeout_secs ?? 0) < 5) {
+      fail(`${name}: response timeout is ${config.response_timeout_secs}s; set it to at least 5s`);
+    } else {
+      ok(`Tool ${name} is set up correctly`);
+    }
   }
 }
 
@@ -83,7 +111,10 @@ if (requireVars(['ELEVENLABS_API_KEY', 'ELEVENLABS_AGENT_ID'])) {
     const url = `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${encodeURIComponent(env.ELEVENLABS_AGENT_ID)}`;
     const res = await fetch(url, { headers: { 'xi-api-key': env.ELEVENLABS_API_KEY } });
     const detail = res.ok ? null : (await res.json().catch(() => ({}))).detail;
-    if (res.ok) ok('API key and agent ID work');
+    if (res.ok) {
+      ok('API key and agent ID work');
+      await checkAgentTools(); // dashboard typos in tool setup silently break calls
+    }
     else if (detail?.status === 'missing_permissions') {
       fail('API key is missing a permission. Edit the key in ElevenLabs and set "ElevenLabs Agents" to Write.');
     } else if (res.status === 401) fail('ElevenLabs rejected the API key (401). Check you copied the whole key.');

@@ -1,4 +1,4 @@
-// voice.js — the voice call: its state machine and the ElevenLabs session.
+﻿// voice.js â€” the voice call: its state machine and the ElevenLabs session.
 //
 // SDK: @elevenlabs/client (see package.json for the version). Checked against
 // its type definitions: clientTools may return only string/number, onMessage
@@ -15,7 +15,7 @@ export const CALL_STATES = {
   },
   connecting: {
     label: 'Connecting',
-    hint: 'Connecting you to Aria…',
+    hint: 'Connecting you to Ariaâ€¦',
   },
   listening: {
     label: 'Listening',
@@ -69,7 +69,7 @@ export function createCallStateMachine(onChange = () => {}) {
     setState(next) {
       if (next === current) return false; // nothing to do
       if (!ALLOWED_NEXT[current]?.includes(next)) {
-        console.warn(`[call] ignored state change ${current} → ${next}`);
+        console.warn(`[call] ignored state change ${current} â†’ ${next}`);
         return false;
       }
       current = next;
@@ -113,7 +113,7 @@ async function checkMicrophone() {
 //   tools:      { get_order_details, cancel_order } from tools.js
 //   onToolResult(name, result): lets app.js react (e.g. refresh Test Orders)
 //   onError(message): shows a message under the orb
-//   onLevels(input, output): mic and Aria's voice volume (0–1), ~60×/s, for the orb animation
+//   onLevels(input, output): mic and Aria's voice volume (0â€“1), ~60Ã—/s, for the orb animation
 export function startVoiceSession({ getConnection, userName, machine, transcript, tools, onToolResult, onError, onLevels }) {
   let conversation = null;
   let stopped = false; // End call pressed before we finished connecting
@@ -141,8 +141,11 @@ export function startVoiceSession({ getConnection, userName, machine, transcript
   for (const [name, run] of Object.entries(tools)) {
     clientTools[name] = async (parameters) => {
       machine.setState('thinking');
-      const result = run(parameters ?? {});
-      console.info(`[tool] ${name}`, parameters, '→', result); // handy when debugging calls
+      // Trim parameter names: a dashboard typo once named it " order_id"
+      // (leading space) and broke every cancellation (DECISIONS D-37).
+      const params = Object.fromEntries(Object.entries(parameters ?? {}).map(([key, value]) => [key.trim(), value]));
+      const result = run(params);
+      console.info(`[tool] ${name}`, parameters, 'â†’', result); // handy when debugging calls
       onToolResult?.(name, result);
       return JSON.stringify(result);
     };
@@ -215,7 +218,7 @@ export function startVoiceSession({ getConnection, userName, machine, transcript
     async stop() {
       stopped = true;
       if (conversation) {
-        await conversation.endSession(); // triggers onDisconnect → 'ended'
+        await conversation.endSession(); // triggers onDisconnect â†’ 'ended'
       } else {
         machine.setState('ended');
       }
