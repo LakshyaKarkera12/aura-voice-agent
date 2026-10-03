@@ -1,0 +1,5 @@
+# Files the Vercel CLI must never upload when deploying.
+# Secrets live in Vercel → Settings → Environment Variables instead.
+.env
+.env.*
+!.env.example

@@ -1,0 +1,343 @@
+/* ==========================================================================
+   base.css — shared by BOTH pages (index.html and app.html).
+   Direction: "apothecary at night" — deep bottle-green, champagne gold,
+   ivory type, frosted-glass cards (docs/UI_DESIGN.md).
+   Holds: design tokens, reset, typography, ambient background, shared
+   components (cards, buttons, spinner) and the page-load animation.
+   ========================================================================== */
+
+/* ---------- 1. Design tokens ----------
+   Every colour checked for contrast (DECISIONS D-33): text ≥ 7:1 on cards. */
+:root {
+  /* Grounds */
+  --ink: #0D1C17;            /* page background: deep bottle green */
+  --ink-raised: #14261F;     /* solid card colour (behind the glass) */
+  --glass: rgba(20, 38, 31, 0.72);          /* frosted card fill */
+  --glass-border: rgba(201, 169, 110, 0.18); /* gold hairline */
+
+  /* Text */
+  --ivory: #F2ECE1;          /* main text (13:1 on cards) */
+  --muted: #A7B3A9;          /* secondary text (7:1) */
+
+  /* Accents */
+  --gold: #C9A96E;           /* champagne gold: accents, primary buttons */
+  --gold-bright: #E2C892;    /* hover / highlights */
+  --gold-soft: #D8BF8C;      /* user chat bubbles */
+  --sage: #8FB596;           /* orb: ready / listening */
+  --peach: #E8B4A0;          /* orb: speaking */
+  --amber: #E6B655;          /* orb: thinking */
+  --stone: #6F7A73;          /* orb: call ended */
+  --danger: #E89A8E;         /* errors, End call (7:1) */
+  --danger-bg: rgba(232, 154, 142, 0.1);
+
+  /* Order status pills: light text on a dark tint, all ≥ 8:1 */
+  --status-transit-fg: #A9CBEB;    --status-transit-bg: #1A2E3A;
+  --status-delivered-fg: #A8D8B0;  --status-delivered-bg: #183326;
+  --status-processing-fg: #EBCB86; --status-processing-bg: #33301C;
+  --status-cancelled-fg: #C2C7C3;  --status-cancelled-bg: #262D2A;
+
+  --border-strong: #6B7C71;  /* form field borders (≥ 3:1) */
+
+  /* Shape & depth */
+  --radius: 20px;
+  --radius-pill: 999px;
+  --shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+
+  /* Fonts (Google Fonts, loaded in each HTML <head>) */
+  --font-heading: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', Consolas, 'SF Mono', monospace;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* fast start, soft landing */
+
+  color-scheme: dark; /* dark scrollbars and form controls */
+}
+
+/* ---------- 2. Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1, h2, h3, h4,
+p,
+ul, ol {
+  margin: 0;
+}
+
+/* `hidden` must always win over any CSS display rule (DECISIONS D-26). */
+[hidden] {
+  display: none !important;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* ---------- 3. Page, ambient background, typography ---------- */
+body {
+  position: relative;
+  min-height: 100vh;
+  background: var(--ink);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Two soft glows (emerald + gold) that drift very slowly behind everything,
+   like light through a glass bottle. Fixed, so they stay put while scrolling. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  background:
+    radial-gradient(40% 35% at 20% 15%, rgba(64, 120, 92, 0.35), transparent 70%),
+    radial-gradient(35% 30% at 85% 80%, rgba(201, 169, 110, 0.16), transparent 70%);
+  animation: ambient-drift 28s ease-in-out infinite alternate;
+}
+
+/* Very fine grain on top of the glows: gives a printed, premium texture. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes ambient-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(3%, -2%, 0) scale(1.08); }
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  /* Fraunces "SOFT" axis: rounded letter ends feel gentle, not newspaper-sharp. */
+  font-variation-settings: 'SOFT' 100;
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.125rem; }
+
+/* Italic accent word inside a heading, in gold (e.g. "Just ask <em>Aria</em>"). */
+h1 em,
+h2 em {
+  font-style: italic;
+  color: var(--gold-bright);
+}
+
+a {
+  color: var(--gold-bright);
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+/* Small letter-spaced gold label above a heading: a classic luxury detail. */
+.eyebrow {
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- 4. Shared components ---------- */
+
+.container {
+  width: 100%;
+  max-width: 1160px;
+  margin-inline: auto;
+  padding: 2rem 1rem;
+}
+
+.brand-name {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-family: var(--font-heading);
+  font-variation-settings: 'SOFT' 100;
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Small gold droplet before the brand name. */
+.brand-name::before {
+  content: '';
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  box-shadow: 0 0 12px rgba(201, 169, 110, 0.6);
+}
+
+/* Frosted-glass card with a gold hairline border. */
+.card {
+  position: relative;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.75rem;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* Buttons: .btn sets the shape; a second class picks the colour. */
+.btn {
+  position: relative;
+  overflow: hidden; /* keeps the hover sheen inside the pill */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out),
+    background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Champagne-gold primary button with a light sweep on hover. */
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold) 60%);
+  color: var(--ink);
+  box-shadow: 0 10px 30px -12px rgba(201, 169, 110, 0.7);
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.7s var(--ease-out);
+}
+
+.btn-primary:hover:not(:disabled)::after {
+  transform: translateX(120%);
+}
+
+.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 14px 36px -12px rgba(226, 200, 146, 0.85);
+}
+
+.btn-danger {
+  background: transparent;
+  border-color: rgba(232, 154, 142, 0.55);
+  color: var(--danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--glass-border);
+  color: var(--ivory);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+
+.btn-small {
+  padding: 0.45rem 1.1rem;
+  font-size: 0.875rem;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- 5. Page-load animation ----------
+   Elements with .reveal rise and fade in. --delay (set in CSS per element)
+   staggers them so the page "composes" itself instead of popping in. */
+.reveal {
+  animation: reveal 0.9s var(--ease-out) both;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(18px); filter: blur(4px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+
+/* ---------- 6. Reduced motion ----------
+   For people who turn animation off in their OS: everything stops,
+   colours and labels remain. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,336 @@
+/* ==========================================================================
+   auth.css — Sign up / Log in page (index.html).
+   Mobile first; the @media block at the end makes the two-column layout.
+   ========================================================================== */
+
+/* ---------- Page layout ---------- */
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+/* Page-load stagger: brand, eyebrow, headline, text, preview, then the form. */
+.brand-name.reveal       { --delay: 0.05s; }
+.brand-copy .eyebrow     { --delay: 0.15s; }
+.brand-copy h1           { --delay: 0.25s; }
+.brand-lead              { --delay: 0.4s; }
+.greeting-preview.reveal { --delay: 0.55s; }
+.auth-card.reveal        { --delay: 0.3s; }
+
+/* ---------- Left: brand panel ---------- */
+.brand-panel {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding: 1.75rem 1.25rem 2.25rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.brand-copy .eyebrow {
+  margin-bottom: 1rem;
+}
+
+.brand-copy h1 {
+  font-size: clamp(2rem, 1.2rem + 3vw, 3.75rem);
+  font-weight: 400;
+  max-width: 14ch;
+}
+
+.brand-lead {
+  margin-top: 1.25rem;
+  max-width: 42ch;
+  color: var(--muted);
+  font-size: 1.0625rem;
+}
+
+/* ---------- Greeting preview (desktop only) ---------- */
+.greeting-preview {
+  display: none;
+  position: relative;
+  margin: 0;
+  max-width: 400px;
+  padding-block: 3rem;
+}
+
+/* A glowing gold-and-peach droplet that slowly breathes and changes shape. */
+.droplet {
+  position: absolute;
+  top: -3rem;
+  right: -6rem;
+  width: 18rem;
+  height: 18rem;
+  background: radial-gradient(
+    circle at 38% 38%,
+    rgba(226, 200, 146, 0.55),
+    rgba(232, 180, 160, 0.3) 40%,
+    rgba(64, 120, 92, 0.25) 62%,
+    transparent 74%
+  );
+  filter: blur(10px);
+  border-radius: 46% 54% 58% 42% / 48% 42% 58% 52%;
+  animation: breathe 9s ease-in-out infinite alternate;
+}
+
+@keyframes breathe {
+  from {
+    transform: scale(1) rotate(0deg);
+    border-radius: 46% 54% 58% 42% / 48% 42% 58% 52%;
+  }
+  to {
+    transform: scale(1.08) rotate(10deg);
+    border-radius: 54% 46% 44% 56% / 42% 56% 44% 58%;
+  }
+}
+
+.preview-bubble {
+  position: relative;
+  display: flex;
+  gap: 0.875rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius) var(--radius) var(--radius) 4px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.preview-avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  box-shadow: 0 0 18px rgba(201, 169, 110, 0.45);
+}
+
+.preview-bubble blockquote {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 1.05rem;
+}
+
+.greeting-preview figcaption {
+  position: relative;
+  margin-top: 0.875rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* ---------- Right: form panel ---------- */
+.form-panel {
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem 3rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+}
+
+/* ---------- Tabs ---------- */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 1.75rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+}
+
+.tab {
+  padding: 0.65rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.3s var(--ease-out), color 0.3s ease;
+}
+
+.tab[aria-selected='true'] {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  color: var(--ink);
+  box-shadow: 0 6px 18px -8px rgba(201, 169, 110, 0.8);
+}
+
+/* Each form fades in when its tab is chosen. */
+.tab-panel:not([hidden]) {
+  animation: reveal 0.5s var(--ease-out) both;
+}
+
+.tab-panel h2 {
+  font-size: 1.75rem;
+  font-weight: 400;
+}
+
+.panel-intro {
+  margin: 0.35rem 0 1.75rem;
+}
+
+/* ---------- Error banner ---------- */
+.form-banner {
+  margin-bottom: 1.25rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(232, 154, 142, 0.5);
+  border-radius: 12px;
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: 0.9375rem;
+  animation: reveal 0.4s var(--ease-out) both;
+}
+
+/* ---------- Form fields ---------- */
+.field {
+  margin-bottom: 1.25rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.field input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus-visible {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.25);
+}
+
+.field input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.field-hint,
+.field-error {
+  margin-top: 0.4rem;
+  font-size: 0.8125rem;
+}
+
+.field-hint {
+  color: var(--muted);
+}
+
+.field-error {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+/* ---------- Password show/hide ---------- */
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap input {
+  padding-right: 4.75rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.4rem;
+  transform: translateY(-50%);
+  padding: 0.4rem 0.7rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--gold-bright);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  background: rgba(201, 169, 110, 0.12);
+}
+
+/* ---------- Submit & footer ---------- */
+.btn-block {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding-block: 0.95rem;
+}
+
+.form-footnote {
+  margin-top: 0.875rem;
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+.form-switch {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--glass-border);
+  color: var(--muted);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gold-bright);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(226, 200, 146, 0.4);
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+/* ---------- Desktop: two columns ---------- */
+@media (min-width: 900px) {
+  .auth-page {
+    grid-template-columns: 1.15fr 1fr;
+  }
+
+  .brand-panel {
+    justify-content: space-between;
+    padding: 3.5rem 4.5rem;
+    border-bottom: 0;
+    border-right: 1px solid var(--glass-border);
+  }
+
+  .greeting-preview {
+    display: block;
+  }
+
+  .form-panel {
+    padding: 3rem;
+  }
+
+  .auth-card {
+    padding: 2.25rem;
+  }
+}

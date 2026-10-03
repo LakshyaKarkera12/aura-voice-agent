@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aura Skincare — Sign up or log in</title>
+
+    <!-- Fonts: Fraunces (headings, with its SOFT axis) + Inter (body).
+         "preconnect" opens the connection to Google early so fonts load faster. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,0..100;1,9..144,400..600,0..100&family=Inter:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/src/styles/base.css" />
+    <link rel="stylesheet" href="/src/styles/auth.css" />
+  </head>
+  <body>
+    <main class="auth-page">
+      <!-- ===== Left: brand panel ===== -->
+      <section class="brand-panel" aria-labelledby="brand-title">
+        <p class="brand-name reveal">Aura Skincare</p>
+
+        <div class="brand-copy">
+          <p class="eyebrow reveal">Customer care, by voice</p>
+          <h1 id="brand-title" class="reveal">Questions about your order? Just ask&nbsp;<em>Aria</em>.</h1>
+          <p class="brand-lead reveal">
+            Aria is our voice assistant. Talk to her to track an order, check
+            returns and shipping, or cancel an order that hasn't shipped yet.
+          </p>
+        </div>
+
+        <!-- Preview of what the call feels like. The glowing "droplet" behind it
+             echoes the animated orb on the call page. Decorative only. -->
+        <figure class="greeting-preview reveal">
+          <div class="droplet" aria-hidden="true"></div>
+          <div class="preview-bubble">
+            <span class="preview-avatar" aria-hidden="true">A</span>
+            <blockquote>
+              <p>Hi Meera, this is Aria from Aura Skincare. How can I help you today?</p>
+            </blockquote>
+          </div>
+          <figcaption>Aria greets you by the name on your account.</figcaption>
+        </figure>
+      </section>
+
+      <!-- ===== Right: form card ===== -->
+      <section class="form-panel">
+        <div class="card auth-card reveal">
+          <!-- Tabs: switch between the two forms without leaving the page. -->
+          <div class="tabs" role="tablist" aria-label="Account">
+            <button class="tab" type="button" role="tab" id="tab-signup"
+                    aria-controls="panel-signup" aria-selected="true">Sign up</button>
+            <button class="tab" type="button" role="tab" id="tab-login"
+                    aria-controls="panel-login" aria-selected="false" tabindex="-1">Log in</button>
+          </div>
+
+          <!-- Server errors appear here (e.g. "Email already registered"). -->
+          <div class="form-banner" id="form-banner" role="alert" hidden></div>
+
+          <!-- ----- Sign up ----- -->
+          <div class="tab-panel" role="tabpanel" id="panel-signup" aria-labelledby="tab-signup">
+            <h2>Create your account</h2>
+            <p class="panel-intro text-muted">It takes a few seconds. Then you can start your call.</p>
+
+            <!-- novalidate: we show our own friendly messages instead of the
+                 browser's default popups. -->
+            <form id="signup-form" novalidate>
+              <div class="field">
+                <label for="signup-name">Full name</label>
+                <input id="signup-name" name="fullName" type="text"
+                       autocomplete="name" aria-describedby="signup-name-error" />
+                <p class="field-error" id="signup-name-error"></p>
+              </div>
+
+              <div class="field">
+                <label for="signup-email">Email</label>
+                <input id="signup-email" name="email" type="email"
+                       autocomplete="email" aria-describedby="signup-email-hint signup-email-error" />
+                <p class="field-hint" id="signup-email-hint">We'll email your call summary to this address.</p>
+                <p class="field-error" id="signup-email-error"></p>
+              </div>
+
+              <div class="field">
+                <label for="signup-password">Password</label>
+                <div class="password-wrap">
+                  <input id="signup-password" name="password" type="password"
+                         autocomplete="new-password" aria-describedby="signup-password-hint signup-password-error" />
+                  <button class="password-toggle" type="button" aria-controls="signup-password">
+                    <span class="toggle-text">Show</span><span class="visually-hidden"> password</span>
+                  </button>
+                </div>
+                <p class="field-hint" id="signup-password-hint">At least 6 characters.</p>
+                <p class="field-error" id="signup-password-error"></p>
+              </div>
+
+              <button class="btn btn-primary btn-block" type="submit">
+                <span class="spinner" aria-hidden="true" hidden></span>
+                <span class="btn-label">Create account</span>
+              </button>
+            </form>
+
+            <p class="form-footnote text-muted">Sign-up is instant — no confirmation email.</p>
+            <p class="form-switch">Already have an account?
+              <button class="link-button" type="button" data-switch-to="login">Log in</button>
+            </p>
+          </div>
+
+          <!-- ----- Log in ----- -->
+          <div class="tab-panel" role="tabpanel" id="panel-login" aria-labelledby="tab-login" hidden>
+            <h2>Welcome back</h2>
+            <p class="panel-intro text-muted">Log in to talk to Aria.</p>
+
+            <form id="login-form" novalidate>
+              <div class="field">
+                <label for="login-email">Email</label>
+                <input id="login-email" name="email" type="email"
+                       autocomplete="email" aria-describedby="login-email-error" />
+                <p class="field-error" id="login-email-error"></p>
+              </div>
+
+              <div class="field">
+                <label for="login-password">Password</label>
+                <div class="password-wrap">
+                  <input id="login-password" name="password" type="password"
+                         autocomplete="current-password" aria-describedby="login-password-error" />
+                  <button class="password-toggle" type="button" aria-controls="login-password">
+                    <span class="toggle-text">Show</span><span class="visually-hidden"> password</span>
+                  </button>
+                </div>
+                <p class="field-error" id="login-password-error"></p>
+              </div>
+
+              <button class="btn btn-primary btn-block" type="submit">
+                <span class="spinner" aria-hidden="true" hidden></span>
+                <span class="btn-label">Log in</span>
+              </button>
+            </form>
+
+            <p class="form-switch">New here?
+              <button class="link-button" type="button" data-switch-to="signup">Create an account</button>
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/js/auth.js"></script>
+  </body>
+</html>

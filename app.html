@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aura Skincare — Talk to Aria</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..600,0..100;1,9..144,400..600,0..100&family=Inter:wght@400;500;600&display=swap"
+    />
+    <link rel="stylesheet" href="/src/styles/base.css" />
+    <link rel="stylesheet" href="/src/styles/app.css" />
+  </head>
+  <!-- auth-pending: hidden until app.js confirms the user is logged in. -->
+  <body class="auth-pending">
+    <!-- ===== Header ===== -->
+    <header class="app-header">
+      <div class="header-inner">
+        <p class="brand-name">Aura Skincare</p>
+        <div class="header-user">
+          <!-- app.js fills in the first name from the session. -->
+          <span class="greeting">Hi, <span id="user-first-name">there</span></span>
+          <button class="btn btn-ghost btn-small" type="button" id="logout-button">Log out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container call-layout">
+      <!-- ===== Call card ===== -->
+      <!-- tabindex="-1": app.js moves keyboard focus here when a call starts,
+           so pressing Space scrolls the page instead of "clicking" End call. -->
+      <section class="card call-card reveal" id="call-card" tabindex="-1" aria-labelledby="call-title">
+        <p class="eyebrow">Voice concierge</p>
+        <h1 id="call-title" class="call-title">Talk to <em>Aria</em></h1>
+
+        <!-- The orb shows the call state (data-state) and reacts to the voice
+             volume (--level, set by app.js while a call is live). -->
+        <div class="orb-stage">
+          <div class="orb" id="orb" data-state="idle" aria-hidden="true">
+            <span class="orb-wave"></span>
+            <span class="orb-wave"></span>
+            <span class="orb-wave"></span>
+            <span class="orb-ring"></span>
+            <span class="orb-core"></span>
+          </div>
+        </div>
+
+        <!-- aria-live: screen readers announce the state when it changes,
+             so the state is never shown by colour alone. -->
+        <p class="state-label" id="state-label" aria-live="polite">Ready</p>
+        <p class="state-hint text-muted" id="state-hint">Press Start call and say hello. Your browser will ask to use the microphone.</p>
+
+        <div class="call-alert" id="call-alert" role="alert" hidden></div>
+
+        <div class="call-actions">
+          <button class="btn btn-primary" type="button" id="start-call">Start call</button>
+          <button class="btn btn-danger" type="button" id="end-call" disabled>End call</button>
+        </div>
+      </section>
+
+      <!-- ===== Test Orders ===== -->
+      <details class="card test-orders reveal" id="test-orders" open>
+        <summary>
+          <h2>Test orders</h2>
+          <span class="test-orders-hint text-muted">Click to copy an ID</span>
+        </summary>
+
+        <!-- app.js builds one card per order from orders.js -->
+        <ul class="order-list" id="order-list"></ul>
+
+        <div class="try-saying">
+          <h3>Also try saying</h3>
+          <ul>
+            <li>"Check order ORD-999."</li>
+            <li>"How much is shipping on a 300 rupee order?"</li>
+            <li>"Book me a flight to Goa."</li>
+          </ul>
+        </div>
+
+        <p class="visually-hidden" id="copy-status" aria-live="polite"></p>
+      </details>
+
+      <!-- ===== Live transcript ===== -->
+      <section class="card transcript-card reveal" aria-labelledby="transcript-title">
+        <div class="card-heading">
+          <p class="eyebrow">Live transcript</p>
+          <h2 id="transcript-title">Conversation</h2>
+        </div>
+        <p class="transcript-empty text-muted" id="transcript-empty">Your conversation will appear here.</p>
+        <ol class="transcript-list" id="transcript-list" aria-live="polite"></ol>
+      </section>
+
+      <!-- ===== Call summary (after the call) ===== -->
+      <section class="card summary-card" id="summary-section" aria-labelledby="summary-title" hidden>
+        <div class="card-heading">
+          <p class="eyebrow">After your call</p>
+          <h2 id="summary-title">Call summary</h2>
+        </div>
+
+        <div class="summary-loading" id="summary-loading" aria-hidden="true">
+          <span class="skeleton"></span>
+          <span class="skeleton"></span>
+          <span class="skeleton skeleton-short"></span>
+        </div>
+
+        <div class="call-alert" id="summary-error" role="alert" hidden></div>
+
+        <div id="summary-content" hidden>
+          <!-- summaryView.js fills in label/value rows. -->
+          <dl class="summary-fields" id="summary-fields"></dl>
+        </div>
+
+        <!-- Separate from the summary on purpose: a failed email never hides it. -->
+        <p class="email-status" id="email-status" aria-live="polite" hidden></p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/js/app.js"></script>
+  </body>
+</html>
