@@ -1,6 +1,6 @@
 # Aria — AI Voice CX Agent for Aura Skincare
 
-> 🔗 **Live app:** https://aura-voice-agent-sandy.vercel.app · 🎥 **Demo video:** _link_ · 💼 
+> 🔗 **Live app:** https://aura-voice-agent-sandy.vercel.app · 🎥 **Demo video:**  https://drive.google.com/drive/folders/1-FLfmlgb5cXPBv7xChazm54mJg4xbJsm?usp=sharing · 💼 
 
 A browser-based voice customer-support agent for Aura Skincare, a fictional Indian D2C skincare brand. Sign up, click **Start call**, and talk to Aria. She greets you by name, looks up orders, follows brand policy (and politely refuses what it doesn't allow), handles unclear or invalid order IDs without inventing anything, and when the call ends you get a transcript plus a structured summary, on screen and by email.
 
