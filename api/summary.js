@@ -9,7 +9,7 @@
 // The email step can fail without failing the request (CLAUDE.md rule 9).
 
 import '../server/loadLocalEnv.js'; // first: local keys for `vercel dev` (no-op on Vercel)
-import { verifyUser } from '../server/verifyUser.js';
+import { verifyUser, isAllowedUser } from '../server/verifyUser.js';
 import { generateSummary } from '../server/gemini.js';
 import { sendEmail } from '../server/gmail.js';
 import { buildSummaryEmail } from '../server/emailTemplate.js';
@@ -24,6 +24,10 @@ export default async function handler(req, res) {
   const user = await verifyUser(req.headers.authorization);
   if (!user) {
     return res.status(401).json({ error: 'Please log in again.' });
+  }
+  // Allow-list: other accounts never reach Gemini or Gmail.
+  if (!isAllowedUser(user.email)) {
+    return res.status(403).json({ error: 'Aria is not available for this account.' });
   }
 
   // 2. Summarise. Name comes from the token, duration from the browser's timer

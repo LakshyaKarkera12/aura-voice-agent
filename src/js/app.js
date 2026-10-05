@@ -43,7 +43,11 @@ async function callApi(path, options = {}) {
       Authorization: `Bearer ${current?.access_token ?? ''}`,
     },
   });
-  if (!res.ok) throw new Error(`${path} answered ${res.status}`);
+  if (!res.ok) {
+    const error = new Error(`${path} answered ${res.status}`);
+    error.status = res.status; // lets voice.js show "not available" for 403
+    throw error;
+  }
   return res.json();
 }
 

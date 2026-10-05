@@ -180,7 +180,13 @@ Record every meaningful choice: what, why, what we gave up. This becomes README 
 - **Issue:** Aria says "a summary will be sent to your email" when ending every call, and Gemini copied it into `action_items` (shown as "Next steps" in the email), which isn't a real follow-up.
 - **Fix:** the summary prompt says not to list it, and `validateSummary()` drops any action item mentioning "summary" as a guarantee. Real items (e.g. "email photos of the damaged product", refunds) are kept; tested.
 
-### D-39: Known limits of ID normalisation
+### D-39: Closing the demo with an allow-list (site stays online)
+- **Need:** keep the website running but stop anyone else from spending the ElevenLabs, Gemini and Gmail quotas.
+- **Decision:** `ALLOWED_EMAILS` (server env var, comma-separated). After verifying the token, both `/api` functions return **403** for any account not on the list, before calling ElevenLabs, Gemini or Gmail. Not set → open (local dev default). The browser shows "Aria is not available for this account".
+- **Why this works:** the agent is private (D-12), so a call needs a signed URL, and the only way to get one is `/api/signed-url`; Gemini and Gmail are only reachable through `/api/summary`. Keys never leave Vercel, so nothing needs rotating.
+- **Reopen:** remove or edit `ALLOWED_EMAILS` in Vercel → redeploy.
+
+### D-40: Known limits of ID normalisation
 - "one hundred and one" becomes ORD-11 (not found), so Aria asks again; speech-to-text usually writes "101" as digits anyway. Digits elsewhere in the same string would be merged, but the LLM passes only the ID.
 
 ### D-16: Mock order dates are relative to "now"

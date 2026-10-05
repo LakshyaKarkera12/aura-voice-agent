@@ -186,6 +186,39 @@ describe('GET /api/signed-url', () => {
   });
 });
 
+describe('ALLOWED_EMAILS allow-list', () => {
+  afterEach(() => { delete process.env.ALLOWED_EMAILS; });
+
+  it('logged-in user NOT on the list → 403 on signed-url, ElevenLabs never called', async () => {
+    process.env.ALLOWED_EMAILS = 'owner@example.com';
+    const res = fakeRes();
+    await signedUrlHandler({ method: 'GET', headers: { authorization: 'Bearer good-token' } }, res);
+    assert.equal(res.statusCode, 403);
+    assert.equal(calls.some((c) => c.url.includes('elevenlabs')), false);
+  });
+
+  it('logged-in user NOT on the list → 403 on summary, no Gemini, no email', async () => {
+    process.env.ALLOWED_EMAILS = 'owner@example.com';
+    const res = fakeRes();
+    await summaryHandler({ method: 'POST', headers: { authorization: 'Bearer good-token' }, body: { messages } }, res);
+    assert.equal(res.statusCode, 403);
+    assert.equal(calls.some((c) => c.url.includes('googleapis')), false);
+  });
+
+  it('user on the list (any letter case) → allowed', async () => {
+    process.env.ALLOWED_EMAILS = 'someone@else.com, Real.User@Example.com';
+    const res = fakeRes();
+    await signedUrlHandler({ method: 'GET', headers: { authorization: 'Bearer good-token' } }, res);
+    assert.equal(res.statusCode, 200);
+  });
+
+  it('list not set → open to every logged-in user (local dev default)', async () => {
+    const res = fakeRes();
+    await signedUrlHandler({ method: 'GET', headers: { authorization: 'Bearer good-token' } }, res);
+    assert.equal(res.statusCode, 200);
+  });
+});
+
 describe('getBearerToken', () => {
   it('reads "Bearer abc"', () => assert.equal(getBearerToken('Bearer abc'), 'abc'));
   for (const bad of [undefined, '', 'abc', 'Basic abc', 'Bearer ']) {

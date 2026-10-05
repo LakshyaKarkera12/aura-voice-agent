@@ -13,6 +13,17 @@ export function getBearerToken(authorizationHeader) {
   return match ? match[1] : null;
 }
 
+// Optional allow-list (DECISIONS D-39). If ALLOWED_EMAILS is set (comma-
+// separated), only those accounts may use the API, so nobody else can spend
+// the ElevenLabs/Gemini/Gmail keys. Not set → open to every logged-in user.
+export function isAllowedUser(email) {
+  const list = (process.env.ALLOWED_EMAILS ?? '')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  return list.length === 0 || list.includes(String(email).toLowerCase());
+}
+
 // Returns { email, name } for a valid token, or null for a missing,
 // expired or fake one (the API then answers 401).
 export async function verifyUser(authorizationHeader) {

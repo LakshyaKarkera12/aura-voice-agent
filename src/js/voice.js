@@ -87,6 +87,7 @@ export const CALL_ERRORS = {
     'Microphone access is blocked. Click the lock icon in the address bar, allow the microphone, then press Start call again.',
   noMic: "We couldn't find a microphone. Plug one in (or check your headset) and try again.",
   connectFailed: "Couldn't connect to Aria. Check your internet connection and try again.",
+  notAvailable: 'Aria is not available for this account right now. This demo is currently closed.',
   dropped: 'The call dropped unexpectedly. Your transcript so far is below.',
 };
 
@@ -207,7 +208,8 @@ export function startVoiceSession({ getConnection, userName, machine, transcript
       console.error('[voice] could not start', error);
       if (!stopped) {
         machine.setState('idle');
-        onError(CALL_ERRORS.connectFailed);
+        // 403 = account not on the server's allow-list (DECISIONS D-39).
+        onError(error.status === 403 ? CALL_ERRORS.notAvailable : CALL_ERRORS.connectFailed);
       }
     }
   }

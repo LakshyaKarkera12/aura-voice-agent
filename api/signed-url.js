@@ -8,7 +8,7 @@
 //   Response: { signedUrl }   (valid 15 minutes to START a call)
 
 import '../server/loadLocalEnv.js'; // first: local keys for `vercel dev` (no-op on Vercel)
-import { verifyUser } from '../server/verifyUser.js';
+import { verifyUser, isAllowedUser } from '../server/verifyUser.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -20,6 +20,10 @@ export default async function handler(req, res) {
   const user = await verifyUser(req.headers.authorization);
   if (!user) {
     return res.status(401).json({ error: 'Please log in again.' });
+  }
+  // Allow-list: other accounts never reach ElevenLabs (no credits used).
+  if (!isAllowedUser(user.email)) {
+    return res.status(403).json({ error: 'Aria is not available for this account.' });
   }
 
   try {
